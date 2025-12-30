@@ -4,10 +4,14 @@ const app = express();
 // A simple function we can unit test
 const convertCelsiusToFahrenheit = (c) => (c * 9/5) + 32;
 
+
+//health route API
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'healthy' });
 });
 
+
+//Weather route API
 app.get('/weather', (req, res) => {
   const apiKey = process.env.WEATHER_API_KEY;
   if (!apiKey) {
