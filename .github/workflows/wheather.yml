@@ -1,4 +1,4 @@
-name: Wheather APP CI
+name: Weather APP CI
 
 on:
     push:
