@@ -1,4 +1,4 @@
-name: Wheather APP CI
+name: Weather APP CI
 
 on:
     push:
@@ -54,7 +54,11 @@ jobs:
              uses: actions/upload-artifact@v4
              with:
                 name: production-files
-                path: dist/
+                path: |
+                    .
+                    !node_modules
+                    !.git
+                    !.github
 
     deploy: 
         needs: build
@@ -64,7 +68,7 @@ jobs:
             - name: Download build artifact
               uses: actions/download-artifact@v4
               with:
-                name: production-files
+                name: production-files  
             
             - name: Deploy to server
               run: echo "Sending files to server"
