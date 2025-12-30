@@ -8,8 +8,11 @@ on:
 
 
 jobs:
-    build:
-        if: ${{github.event.label.name == 'ready-to-test'}}
+    test:
+        if: |
+            github.event_name == 'push' || 
+            contains(github.event.pull_request.labels.*.name, 'ready-to-test')
+        
         runs-on: ubuntu-latest
 
         steps:
@@ -26,8 +29,48 @@ jobs:
              
            - name: 4. Run tests
              run: npm test
-             env:
-                WEATHER_API_KEY: ${{secrets.WEATHER_API_KEY}}
+
+    build:
+        needs: test
+        if: github.ref == 'refs/heads/main'
+        runs-on: ubuntu-latest
+
+        steps:
+           - name: 1.Checkout Code
+             uses: actions/checkout@v4
+             
+           - name: 2. Setup Node
+             uses: actions/setup-node@v4
+             with:
+                node-version: '20'
+                cache: 'npm'
+           - name: 3. Install Dependencies
+             run: npm ci
+            
+           - name: 4. Build Project
+             run: npm run build --if-present
+
+           - name: 5. Upload artifact
+             uses: actions/upload-artifact@v4
+             with:
+                name: production-files
+                path: dist/
+
+    deploy: 
+        needs: build
+        runs-on: ubuntu-latest
+        environment: production
+        steps:
+            - name: Download build artifact
+              uses: actions/download-artifact@v4
+              with:
+                name: production-files
+            
+            - name: Deploy to server
+              run: echo "Sending files to server"
+
+            
+
 
 
 
