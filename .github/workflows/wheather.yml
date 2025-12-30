@@ -9,7 +9,10 @@ on:
 
 jobs:
     build:
-        if: ${{github.event.label.name == 'ready-to-test'}}
+        if: |
+            github.event_name == 'push' || 
+            contains(github.event.pull_request.labels.*.name, 'ready-to-test')
+        
         runs-on: ubuntu-latest
 
         steps:
